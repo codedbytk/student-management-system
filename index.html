@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPTMS - Students Peer Tutoring Management System</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #F5F7FA;
+            color: #0F172A;
+            line-height: 1.6;
+        }
+
+        /* Theme Colors */
+        :root {
+            --primary: #004AAD;
+            --primary-dark: #003380;
+            --background: #F5F7FA;
+            --text: #0F172A;
+            --text-gray: #6B7280;
+            --border: #E5E7EB;
+            --white: #FFFFFF;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            --blue: #3B82F6;
+            --green: #10B981;
+            --purple: #8B5CF6;
+        }
+
+        /* Layout */
+        .min-h-screen { min-height: 100vh; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 1rem; }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+            padding: 0 1.5rem;
+        }
+        .header-logo { display: flex; align-items: center; gap: 0.75rem; }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        .header-user { display: flex; align-items: center; gap: 1rem; }
+
+        /* Card */
+        .card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .card:hover { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+
+        /* Button */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .btn-outline:hover { background: var(--background); }
+        .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8125rem; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-full { width: 100%; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Input */
+        .input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+        .input:focus { outline: none; border-color: var(--primary); }
+        .input-group { margin-bottom: 1rem; }
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        .textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .textarea:focus { outline: none; border-color: var(--primary); }
+
+        /* Avatar */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .avatar-lg { width: 80px; height: 80px; font-size: 1.5rem; }
+        .avatar-md { width: 48px; height: 48px; font-size: 1rem; }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .badge-primary { background: var(--primary); color: white; }
+        .badge-success { background: var(--success); color: white; }
+        .badge-warning { background: var(--warning); color: white; }
+        .badge-error { background: var(--error); color: white; }
+        .badge-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .badge-blue { background: var(--blue); color: white; }
+        .badge-green { background: var(--green); color: white; }
+        .badge-purple { background: var(--purple); color: white; }
+        .badge-gray { background: #6B7280; color: white; }
+
+        /* Grid */
+        .grid { display: grid; gap: 1.5rem; }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+        @media (min-width: 768px) {
+            .md-grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+            .md-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+            .md-grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+            .md-grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+        }
+
+        @media (min-width: 1024px) {
+            .lg-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+            .lg-grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+        }
+
+        /* Flex */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-1 { gap: 0.25rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; }
+
+        /* Spacing */
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+
+        /* Text */
+        .text-center { text-align: center; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-gray { color: var(--text-gray); }
+        .text-primary { color: var(--primary); }
+        .text-success { color: var(--success); }
+
+        /* Auth Pages */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 28rem;
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .auth-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        .demo-accounts {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: var(--background);
+            border-radius: 6px;
+        }
+
+        /* Tabs */
+        .tabs { margin-bottom: 1.5rem; }
+        .tabs-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: var(--background);
+            border-radius: 6px;
+            padding: 0.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .tab-trigger {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        .tab-trigger.active {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Search */
+        .search-wrapper { position: relative; }
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            pointer-events: none;
+        }
+        .search-input { padding-left: 2.5rem; }
+
+        /* Star Rating */
+        .star-rating { display: flex; gap: 0.25rem; }
+        .star {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .star-lg { width: 32px; height: 32px; }
+        .star-filled {
+            fill: #FBBF24;
+            color: #FBBF24;
+        }
+        .star-empty {
+            fill: none;
+            color: #D1D5DB;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 1rem;
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            max-width: 32rem;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header { margin-bottom: 1.5rem; }
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        .modal-description {
+            font-size: 0.875rem;
+            color: var(--text-gray);
+        }
+
+        /* Table */
+        .table-wrapper { overflow-x: auto; }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        .table th {
+            text-align: left;
+            padding: 0.75rem 0.5rem;
+            border-bottom: 2px solid var(--border);
+            font-weight: 500;
+            color: var(--text-gray);
+        }
+        .table td {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Stats Card */
+        .stat-card {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-gray);
+        }
+
+        /* Toast */
+        #toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .toast {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--error); }
+
+        /* Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 24px;
+        }
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        .switch input:checked + .switch-slider {
+            background-color: var(--primary);
+        }
+        .switch input:checked + .switch-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+        .w-full { width: 100%; }
+        .max-w-md { max-width: 28rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .space-y-6 > * + * { margin-top: 1.5rem; }
+
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .icon-sm { width: 16px; height: 16px; }
+        .icon-lg { width: 24px; height: 24px; }
+
+        @media (max-width: 640px) {
+            .sm-hidden { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <div id="toast-container"></div>
+
+    <script>
+        // ===== UTILITIES =====
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' 
+                ? '<svg class="icon" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>'
+                : '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+            
+            toast.innerHTML = `${icon}<span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        }
+
+        function createIcon(name, className = 'icon') {
+            const icons = {
+                'book': '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+                'logout': '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
+                'search': '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>',
+                'star': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+                'calendar': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+                'clock': '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+                'check': '<polyline points="20 6 9 17 4 12"/>',
+                'x': '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+                'users': '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+                'trending-up': '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+                'alert': '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
+            };
+            return `<svg class="${className}" viewBox="0 0 24 24">${icons[name] || ''}</svg>`;
+        }
+
+        function createAvatar(name, className = '', bgColor = '') {
+            const initials = getInitials(name);
+            const style = bgColor ? `background: ${bgColor}` : '';
+            return `<div class="avatar ${className}" style="${style}">${initials}</div>`;
+        }
+
+        function createBadge(text, type = 'primary') {
+            return `<span class="badge badge-${type}">${text}</span>`;
+        }
+
+        function createStarRating(rating, maxStars = 5) {
+            let html = '<div class="star-rating">';
+            for (let i = 1; i <= maxStars; i++) {
+                const filled = i <= rating ? 'star-filled' : 'star-empty';
+                html += `<svg class="star ${filled}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ===== AUTHENTICATION =====
+        const AUTH_STORAGE_KEY = 'sptms_user';
+        const MOCK_USERS = [
+            { email: 'student@nust.ac.zw', password: 'student123', role: 'student', name: 'John Doe' },
+            { email: 'tutor@nust.ac.zw', password: 'tutor123', role: 'tutor', name: 'Alice Smith' },
+            { email: 'admin@nust.ac.zw', password: 'admin123', role: 'admin', name: 'Admin User' },
+        ];
+
+        class AuthManager {
+            constructor() {
+                this.currentUser = this.loadUser();
+            }
+
+            login(email, password) {
+                const user = MOCK_USERS.find(u => u.email === email && u.password === password);
+                if (user) {
+                    const userData = { ...user };
+                    delete userData.password;
+                    this.saveUser(userData);
+                    this.currentUser = userData;
+                    return { success: true, user: userData };
+                }
+                return { success: false, message: 'Invalid email or password' };
+            }
+
+            register(formData) {
+                const user = {
+                    email: formData.email,
+                    name: `${formData.firstName} ${formData.lastName}`,
+                    role: formData.role
+                };
+                this.saveUser(user);
+                this.currentUser = user;
+                return { success: true, user };
+            }
+
+            logout() {
+                localStorage.removeItem(AUTH_STORAGE_KEY);
+                this.currentUser = null;
+            }
+
+            saveUser(user) {
+                localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+            }
+
+            loadUser() {
+                const userData = localStorage.getItem(AUTH_STORAGE_KEY);
+                return userData ? JSON.parse(userData) : null;
+            }
+
+            isAuthenticated() {
+                return this.currentUser !== null;
+            }
+
+            getUser() {
+                return this.currentUser;
+            }
+        }
+
+        const auth = new AuthManager();
+
+        // ===== COMPONENTS =====
+        function createHeader(user, onLogout) {
+            const roleColors = {
+                'student': '#3B82F6',
+                'tutor': '#10B981',
+                'admin': '#8B5CF6'
+            };
+            
+            return `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="header-logo">
+                            <div class="logo-icon">${createIcon('book', 'icon')}</div>
+                            <div>
+                                <div style="font-weight: 600;">SPTMS</div>
+                                <div class="text-xs text-gray">${user.role.charAt(0).toUpperCase() + user.role.slice(1)} Portal</div>
+                            </div>
+                        </div>
+                        <div class="header-user">
+                            <div class="text-right sm-hidden">
+                                <div class="text-sm" style="font-weight: 500;">${escapeHtml(user.name)}</div>
+                                <div class="text-xs text-gray">${user.role}</div>
+                            </div>
+                            ${createAvatar(user.name, '', roleColors[user.role])}
+                            <button class="btn btn-outline btn-sm" onclick="handleLogout()">
+                                ${createIcon('logout', 'icon-sm')}
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </header>
+            `;
+        }
+
+        function createTabs(tabs, activeTab, onTabChange) {
+            const tabsListHtml = tabs.map(tab => `
+                <button class="tab-trigger ${tab.id === activeTab ? 'active' : ''}" 
+                        onclick="${onTabChange}('${tab.id}')">
+                    ${tab.label}
+                    ${tab.badge ? `<span class="badge badge-error" style="margin-left: 0.5rem;">${tab.badge}</span>` : ''}
+                </button>
+            `).join('');
+
+            return `<div class="tabs"><div class="tabs-list">${tabsListHtml}</div></div>`;
+        }
+
+        function createModal(id, title, description, content, isOpen = false) {
+            return `
+                <div id="${id}" class="modal-overlay ${isOpen ? '' : 'hidden'}">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">${title}</h3>
+                            ${description ? `<p class="modal-description">${description}</p>` : ''}
+                        </div>
+                        ${content}
+                    </div>
+                </div>
+            `;
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.add('hidden');
+            }
+        });
+
+        function createStatCard(label, value, sublabel, icon) {
+            return `
+                <div class="card">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray text-sm">${label}</span>
+                        ${icon ? createIcon(icon, 'icon text-primary') : ''}
+                    </div>
+                    <div class="text-3xl" style="font-weight: 600;">${value}</div>
+                    ${sublabel ? `<div class="text-sm text-success mt-1">${sublabel}</div>` : ''}
+                </div>
+            `;
+        }
+
+        function createSessionCard(session, actions = '') {
+            return `
+                <div class="card">
+                    <div class="flex items-start justify-between">
+                        <div style="flex: 1;">
+                            <div class="flex items-center gap-3 mb-3">
+                                ${createAvatar(session.student || session.tutor, '', session.student ? '#3B82F6' : '#10B981')}
+                                <div>
+                                    <h3 style="font-weight: 600;">${escapeHtml(session.student || session.tutor)}</h3>
+                                    <p class="text-sm text-gray">${escapeHtml(session.subject)}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4 text-sm text-gray mb-3">
+                                <div class="flex items-center gap-2">
+                                    ${createIcon('calendar', 'icon-sm')}
+                                    ${session.date}
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    ${createIcon('clock', 'icon-sm')}
+                                    ${session.time || 'N/A'}
+                                </div>
+                                ${createBadge(session.status, session.status === 'Completed' ? 'success' : session.status === 'Scheduled' ? 'blue' : 'warning')}
+                            </div>
+                            ${session.notes ? `
+                                <div style="background: var(--background); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem;">
+                                    <p class="text-sm"><strong>Notes:</strong> ${escapeHtml(session.notes)}</p>
+                                </div>
+                            ` : ''}
+                            ${actions}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ===== LOGIN PAGE =====
+        function renderLoginPage() {
+            return `
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="text-center mb-8">
+                            <div class="auth-icon">${createIcon('book', 'icon-lg')}</div>
+                            <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Students Peer Tutoring</h1>
+                            <p class="text-gray">Management System</p>
+                        </div>
+
+                        <form id="login-form" class="space-y-6">
+                            <div class="input-group">
+                                <label class="label" for="email">Email</label>
+                                <input type="email" id="email" class="input" placeholder="student@nust.ac.zw" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="label" for="password">Password</label>
+                                <input type="password" id="password" class="input" placeholder="Enter your password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-full">Login</button>
+                        </form>
+
+                        <div class="mt-6 text-center">
+                            <p class="text-sm text-gray">
+                                Don't have an account? 
+                                <a href="#" onclick="navigateTo('register'); return false;" style="color: var(--primary);">Register here</a>
+                            </p>
+                        </div>
+
+                        <div class="demo-accounts">
+                            <p class="text-xs text-gray mb-2">Demo Accounts:</p>
+                            <div class="space-y-1 text-xs">
+                                <p>Student: student@nust.ac.zw / student123</p>
+                                <p>Tutor: tutor@nust.ac.zw / tutor123</p>
+                                <p>Admin: admin@nust.ac.zw / admin123</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function initLoginPage() {
+            const form = document.getElementById('login-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    
+                    const result = auth.login(email, password);
+                    if (result.success) {
+                        showToast(`Welcome back, ${result.user.name}!`, 'success');
+                        navigateTo(result.user.role + '-dashboard');
+                    } else {
+                        showToast(result.message, 'error');
+                    }
+                });
+            }
+        }
+
+        // ===== REGISTER PAGE =====
+        function renderRegisterPage() {
+            return `
+                <div class="auth-container">
+                    <div class="auth-card">
+                        <div class="text-center mb-8">
+                            <div class="auth-icon">${createIcon('book', 'icon-lg')}</div>
+                            <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Create Account</h1>
+                            <p class="text-gray">Join SPTMS today</p>
+                        </div>
+
+                        <form id="register-form" class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="input-group">
+                                    <label class="label" for="firstName">First Name</label>
+                                    <input type="text" id="firstName" class="input" placeholder="John" required>
+                                </div>
+                                <div class="input-group">
+                                    <label class="label" for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" class="input" placeholder="Doe" required>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label class="label" for="reg-email">Email</label>
+                                <input type="email" id="reg-email" class="input" placeholder="you@nust.ac.zw" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="label" for="role">Register as</label>
+                                <select id="role" class="input" required>
+                                    <option value="student">Student</option>
+                                    <option value="tutor">Tutor</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label class="label" for="reg-password">Password</label>
+                                <input type="password" id="reg-password" class="input" placeholder="At least 6 characters" required>
+                            </div>
+                            <div class="input-group">
+                                <label class="label" for="confirmPassword">Confirm Password</label>
+                                <input type="password" id="confirmPassword" class="input" placeholder="Re-enter password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+                        </form>
+
+                        <div class="mt-6 text-center">
+                            <p class="text-sm text-gray">
+                                Already have an account? 
+                                <a href="#" onclick="navigateTo('login'); return false;" style="color: var(--primary);">Login here</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function initRegisterPage() {
+            const form = document.getElementById('register-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = {
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value,
+                        email: document.getElementById('reg-email').value,
+                        password: document.getElementById('reg-password').value,
+                        confirmPassword: document.getElementById('confirmPassword').value,
+                        role: document.getElementById('role').value
+                    };
+                    
+                    if (formData.password !== formData.confirmPassword) {
+                        showToast('Passwords do not match', 'error');
+                        return;
+                    }
+                    
+                    if (formData.password.length < 6) {
+                        showToast('Password must be at least 6 characters', 'error');
+                        return;
+                    }
+                    
+                    const result = auth.register(formData);
+                    if (result.success) {
+                        showToast('Account created successfully!', 'success');
+                        navigateTo(result.user.role + '-dashboard');
+                    }
+                });
+            }
+        }
+
+        // ===== STUDENT DASHBOARD =====
+        let currentStudentTab = 'search';
+        let searchQuery = '';
+
+        const MOCK_TUTORS = [
+            { id: 1, name: 'Alice Smith', subjects: ['Mathematics', 'Physics'], rating: 4.9, sessions: 156, availability: 'Available', bio: 'Mathematics and Physics tutor with 3 years of experience.' },
+            { id: 2, name: 'Bob Johnson', subjects: ['Chemistry', 'Biology'], rating: 4.8, sessions: 142, availability: 'Available', bio: 'Passionate about helping students understand science concepts.' },
+            { id: 3, name: 'Carol Davis', subjects: ['Computer Science', 'Mathematics'], rating: 4.7, sessions: 128, availability: 'Busy', bio: 'CS major specializing in programming and algorithms.' },
+            { id: 4, name: 'David Chen', subjects: ['English', 'History'], rating: 4.9, sessions: 134, availability: 'Available', bio: 'English tutor helping with essays and literature analysis.' },
+        ];
+
+        const MOCK_SESSIONS = [
+            { id: 1, tutor: 'Alice Smith', subject: 'Mathematics', date: '2025-11-12', time: '14:00', status: 'Scheduled', canRate: false },
+            { id: 2, tutor: 'Bob Johnson', subject: 'Chemistry', date: '2025-11-10', time: '10:00', status: 'Completed', canRate: true },
+            { id: 3, tutor: 'David Chen', subject: 'English', date: '2025-11-15', time: '16:00', status: 'Pending', canRate: false },
+        ];
+
+        function renderStudentDashboard(user) {
+            return `
+                ${createHeader(user, handleLogout)}
+                <div class="container py-8">
+                    ${createTabs([
+                        { id: 'search', label: 'Find Tutors' },
+                        { id: 'sessions', label: 'My Sessions' },
+                        { id: 'profile', label: 'Profile' }
+                    ], currentStudentTab, 'changeStudentTab')}
+                    
+                    <div id="student-tab-search" class="tab-content ${currentStudentTab === 'search' ? 'active' : ''}">
+                        ${renderSearchTab()}
+                    </div>
+                    
+                    <div id="student-tab-sessions" class="tab-content ${currentStudentTab === 'sessions' ? 'active' : ''}">
+                        ${renderSessionsTab()}
+                    </div>
+                    
+                    <div id="student-tab-profile" class="tab-content ${currentStudentTab === 'profile' ? 'active' : ''}">
+                        ${renderStudentProfileTab(user)}
+                    </div>
+                </div>
+                ${renderBookingModal()}
+                ${renderFeedbackModal()}
+            `;
+        }
+
+        function renderSearchTab() {
+            const filteredTutors = MOCK_TUTORS.filter(tutor =>
+                tutor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                tutor.subjects.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
+            );
+
+            return `
+                <div class="search-wrapper mb-6">
+                    ${createIcon('search', 'icon search-icon')}
+                    <input type="text" class="input search-input" placeholder="Search tutors by name or subject..." 
+                           value="${searchQuery}" oninput="handleSearchChange(this.value)">
+                </div>
+
+                <div class="grid md-grid-cols-2 lg-grid-cols-3">
+                    ${filteredTutors.map(tutor => `
+                        <div class="card">
+                            <div class="flex items-start gap-4 mb-4">
+                                ${createAvatar(tutor.name, 'avatar-md')}
+                                <div style="flex: 1;">
+                                    <h3 style="font-weight: 600; margin-bottom: 0.25rem;">${escapeHtml(tutor.name)}</h3>
+                                    <div class="flex items-center gap-1 mb-2">
+                                        ${createIcon('star', 'icon-sm star-filled')}
+                                        <span class="text-sm">${tutor.rating}</span>
+                                        <span class="text-xs text-gray">(${tutor.sessions} sessions)</span>
+                                    </div>
+                                    ${createBadge(tutor.availability, tutor.availability === 'Available' ? 'success' : 'gray')}
+                                </div>
+                            </div>
+
+                            <p class="text-sm text-gray mb-3">${escapeHtml(tutor.bio)}</p>
+
+                            <div class="mb-4">
+                                <div class="text-sm" style="font-weight: 500; margin-bottom: 0.5rem;">Subjects:</div>
+                                <div class="flex gap-2" style="flex-wrap: wrap;">
+                                    ${tutor.subjects.map(s => createBadge(s, 'outline')).join('')}
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-full" 
+                                    onclick="openBookingModal(${tutor.id})" 
+                                    ${tutor.availability !== 'Available' ? 'disabled' : ''}>
+                                Book Session
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderSessionsTab() {
+            return `
+                <h2 style="font-weight: 600; margin-bottom: 1.5rem;">My Tutoring Sessions</h2>
+                <div class="space-y-4">
+                    ${MOCK_SESSIONS.map(session => createSessionCard(session, 
+                        session.canRate ? `
+                            <button class="btn btn-outline btn-sm" onclick="openFeedbackModal(${session.id})">
+                                ${createIcon('star', 'icon-sm')}
+                                Rate
+                            </button>
+                        ` : ''
+                    )).join('')}
+                </div>
+            `;
+        }
+
+        function renderStudentProfileTab(user) {
+            return `
+                <div class="card">
+                    <div class="flex items-center gap-4 mb-6">
+                        ${createAvatar(user.name, 'avatar-lg')}
+                        <div>
+                            <h2 style="font-weight: 600; margin-bottom: 0.25rem;">${escapeHtml(user.name)}</h2>
+                            <p class="text-gray">${escapeHtml(user.email)}</p>
+                            ${createBadge('Student', 'blue')}
+                        </div>
+                    </div>
+
+                    <div class="grid md-grid-cols-3">
+                        ${createStatCard('Total Sessions', '3', '')}
+                        ${createStatCard('Upcoming', '1', '')}
+                        ${createStatCard('Completed', '1', '')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderBookingModal() {
+            return createModal('booking-modal', 'Book Tutoring Session', 'Schedule a session with a tutor', `
+                <form id="booking-form" class="space-y-4">
+                    <div class="input-group">
+                        <label class="label">Subject</label>
+                        <input type="text" class="input" placeholder="Select subject" required>
+                    </div>
+                    <div class="input-group">
+                        <label class="label">Preferred Date</label>
+                        <input type="date" class="input" required>
+                    </div>
+                    <div class="input-group">
+                        <label class="label">Preferred Time</label>
+                        <input type="time" class="input" required>
+                    </div>
+                    <div class="input-group">
+                        <label class="label">Additional Notes (Optional)</label>
+                        <textarea class="textarea" placeholder="Any specific topics you'd like to cover..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Confirm Booking</button>
+                </form>
+            `);
+        }
+
+        function renderFeedbackModal() {
+            return createModal('feedback-modal', 'Rate Your Session', 'Share your experience', `
+                <form id="feedback-form" class="space-y-4">
+                    <div class="input-group">
+                        <label class="label">Rating</label>
+                        <div class="flex gap-2" id="star-rating">
+                            ${[1, 2, 3, 4, 5].map(star => `
+                                <svg class="star star-lg star-empty" viewBox="0 0 24 24" onclick="setRating(${star})">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="label">Feedback (Optional)</label>
+                        <textarea class="textarea" placeholder="Tell us about your tutoring experience..." rows="4"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Submit Feedback</button>
+                </form>
+            `);
+        }
+
+        function changeStudentTab(tabId) {
+            currentStudentTab = tabId;
+            renderApp();
+        }
+
+        function handleSearchChange(value) {
+            searchQuery = value;
+            document.getElementById('student-tab-search').innerHTML = renderSearchTab();
+        }
+
+        function openBookingModal(tutorId) {
+            openModal('booking-modal');
+            const form = document.getElementById('booking-form');
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                showToast('Session booked successfully!', 'success');
+                closeModal('booking-modal');
+            };
+        }
+
+        function openFeedbackModal(sessionId) {
+            openModal('feedback-modal');
+            const form = document.getElementById('feedback-form');
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                if (currentRating === 0) {
+                    showToast('Please select a rating', 'error');
+                    return;
+                }
+                showToast('Feedback submitted successfully!', 'success');
+                closeModal('feedback-modal');
+                currentRating = 0;
+            };
+        }
+
+        let currentRating = 0;
+        function setRating(rating) {
+            currentRating = rating;
+            const stars = document.querySelectorAll('#star-rating .star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.remove('star-empty');
+                    star.classList.add('star-filled');
+                } else {
+                    star.classList.remove('star-filled');
+                    star.classList.add('star-empty');
+                }
+            });
+        }
+
+        function initStudentDashboard() {}
+
+        // ===== TUTOR DASHBOARD =====
+        let currentTutorTab = 'requests';
+        let isAvailable = true;
+
+        const SESSION_REQUESTS = [
+            { id: 1, student: 'John Doe', subject: 'Mathematics', date: '2025-11-14', time: '14:00', status: 'Pending', notes: 'Need help with calculus derivatives' },
+            { id: 2, student: 'Sarah Lee', subject: 'Physics', date: '2025-11-15', time: '10:00', status: 'Pending', notes: 'Questions about quantum mechanics' },
+        ];
+
+        const UPCOMING_SESSIONS = [
+            { id: 1, student: 'Mike Brown', subject: 'Mathematics', date: '2025-11-12', time: '16:00', status: 'Confirmed' },
+            { id: 2, student: 'Emma Wilson', subject: 'Physics', date: '2025-11-13', time: '09:00', status: 'Confirmed' },
+        ];
+
+        const COMPLETED_SESSIONS = [
+            { id: 1, student: 'Jane Smith', subject: 'Mathematics', date: '2025-11-10', rating: 5, feedback: 'Excellent tutor! Very clear explanations.' },
+            { id: 2, student: 'Tom Davis', subject: 'Physics', date: '2025-11-09', rating: 5, feedback: 'Really helped me understand the concepts.' },
+            { id: 3, student: 'Lisa Chen', subject: 'Mathematics', date: '2025-11-08', rating: 4, feedback: 'Good session, would book again.' },
+        ];
+
+        function renderTutorDashboard(user) {
+            return `
+                ${createHeader(user, handleLogout)}
+                <div class="container py-8">
+                    <div class="grid md-grid-cols-4 mb-8">
+                        ${createStatCard('Total Sessions', '156', '+12 this month', 'book')}
+                        ${createStatCard('Average Rating', '4.9', '', 'star')}
+                        ${createStatCard('Pending Requests', SESSION_REQUESTS.length.toString(), 'Needs response', 'calendar')}
+                        ${createStatCard('Upcoming', UPCOMING_SESSIONS.length.toString(), 'Next 7 days', 'trending-up')}
+                    </div>
+
+                    ${createTabs([
+                        { id: 'requests', label: 'Requests', badge: SESSION_REQUESTS.length },
+                        { id: 'upcoming', label: 'Upcoming' },
+                        { id: 'history', label: 'History' },
+                        { id: 'profile', label: 'Profile' }
+                    ], currentTutorTab, 'changeTutorTab')}
+                    
+                    <div id="tutor-tab-requests" class="tab-content ${currentTutorTab === 'requests' ? 'active' : ''}">
+                        ${renderRequestsTab()}
+                    </div>
+                    
+                    <div id="tutor-tab-upcoming" class="tab-content ${currentTutorTab === 'upcoming' ? 'active' : ''}">
+                        ${renderUpcomingTab()}
+                    </div>
+                    
+                    <div id="tutor-tab-history" class="tab-content ${currentTutorTab === 'history' ? 'active' : ''}">
+                        ${renderHistoryTab()}
+                    </div>
+                    
+                    <div id="tutor-tab-profile" class="tab-content ${currentTutorTab === 'profile' ? 'active' : ''}">
+                        ${renderTutorProfileTab(user)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRequestsTab() {
+            return `
+                <div class="flex items-center justify-between mb-6">
+                    <h2 style="font-weight: 600;">Session Requests</h2>
+                    <div class="flex items-center gap-2">
+                        <label class="label" style="margin: 0;">Available for bookings</label>
+                        <label class="switch">
+                            <input type="checkbox" ${isAvailable ? 'checked' : ''} onchange="toggleAvailability()">
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                ${SESSION_REQUESTS.length === 0 ? `
+                    <div class="card text-center" style="padding: 2rem;">
+                        <p class="text-gray">No pending requests</p>
+                    </div>
+                ` : `
+                    <div class="space-y-4">
+                        ${SESSION_REQUESTS.map(request => `
+                            <div class="card">
+                                <div class="flex items-center gap-3 mb-3">
+                                    ${createAvatar(request.student)}
+                                    <div>
+                                        <h3 style="font-weight: 600;">${escapeHtml(request.student)}</h3>
+                                        <p class="text-sm text-gray">${escapeHtml(request.subject)}</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-4 text-sm text-gray mb-3">
+                                    <div class="flex items-center gap-2">
+                                        ${createIcon('calendar', 'icon-sm')}
+                                        ${request.date}
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        ${createIcon('clock', 'icon-sm')}
+                                        ${request.time}
+                                    </div>
+                                </div>
+                                ${request.notes ? `
+                                    <div style="background: var(--background); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem;">
+                                        <p class="text-sm"><strong>Notes:</strong> ${escapeHtml(request.notes)}</p>
+                                    </div>
+                                ` : ''}
+                                <div class="flex gap-2">
+                                    <button class="btn btn-success btn-sm" onclick="acceptRequest(${request.id})">
+                                        ${createIcon('check', 'icon-sm')}
+                                        Accept
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" onclick="declineRequest(${request.id})">
+                                        ${createIcon('x', 'icon-sm')}
+                                        Decline
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `}
+            `;
+        }
+
+        function renderUpcomingTab() {
+            return `
+                <h2 style="font-weight: 600; margin-bottom: 1.5rem;">Upcoming Sessions</h2>
+                ${UPCOMING_SESSIONS.length === 0 ? `
+                    <div class="card text-center" style="padding: 2rem;">
+                        <p class="text-gray">No upcoming sessions</p>
+                    </div>
+                ` : `
+                    <div class="space-y-4">
+                        ${UPCOMING_SESSIONS.map(session => createSessionCard(session)).join('')}
+                    </div>
+                `}
+            `;
+        }
+
+        function renderHistoryTab() {
+            return `
+                <h2 style="font-weight: 600; margin-bottom: 1.5rem;">Completed Sessions</h2>
+                <div class="space-y-4">
+                    ${COMPLETED_SESSIONS.map(session => `
+                        <div class="card">
+                            <div class="flex items-center gap-3 mb-3">
+                                ${createAvatar(session.student)}
+                                <div>
+                                    <h3 style="font-weight: 600;">${escapeHtml(session.student)}</h3>
+                                    <p class="text-sm text-gray">${escapeHtml(session.subject)}</p>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray mb-3">${session.date}</div>
+                            <div class="flex items-center gap-2 mb-2">
+                                ${createStarRating(session.rating)}
+                                <span class="text-sm text-gray">(${session.rating}/5)</span>
+                            </div>
+                            ${session.feedback ? `
+                                <div style="background: var(--background); padding: 0.75rem; border-radius: 6px;">
+                                    <p class="text-sm" style="font-style: italic;">"${escapeHtml(session.feedback)}"</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderTutorProfileTab(user) {
+            return `
+                <div class="card">
+                    <div class="flex items-center gap-4 mb-6">
+                        ${createAvatar(user.name, 'avatar-lg', '#10B981')}
+                        <div>
+                            <h2 style="font-weight: 600; margin-bottom: 0.25rem;">${escapeHtml(user.name)}</h2>
+                            <p class="text-gray">${escapeHtml(user.email)}</p>
+                            ${createBadge('Tutor', 'green')}
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <h3 style="font-weight: 600; margin-bottom: 0.5rem;">Subjects</h3>
+                            <div class="flex gap-2" style="flex-wrap: wrap;">
+                                ${createBadge('Mathematics', 'outline')}
+                                ${createBadge('Physics', 'outline')}
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 style="font-weight: 600; margin-bottom: 0.5rem;">Bio</h3>
+                            <p class="text-sm text-gray">Mathematics and Physics tutor with 3 years of experience helping students excel in their studies.</p>
+                        </div>
+
+                        <div class="grid md-grid-cols-3 mt-6">
+                            ${createStatCard('Total Sessions', '156', '')}
+                            ${createStatCard('Average Rating', '4.9', '')}
+                            ${createStatCard('Response Rate', '98%', '')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function changeTutorTab(tabId) {
+            currentTutorTab = tabId;
+            renderApp();
+        }
+
+        function toggleAvailability() {
+            isAvailable = !isAvailable;
+            showToast(isAvailable ? 'You are now available for bookings' : 'You are now unavailable', 'success');
+        }
+
+        function acceptRequest(requestId) {
+            showToast('Session request accepted!', 'success');
+        }
+
+        function declineRequest(requestId) {
+            showToast('Session request declined', 'success');
+        }
+
+        function initTutorDashboard() {}
+
+        // ===== ADMIN DASHBOARD =====
+        let currentAdminTab = 'approvals';
+        let adminSearchQuery = '';
+
+        const PENDING_TUTORS = [
+            { id: 1, name: 'Emma Wilson', email: 'emma@nust.ac.zw', subjects: ['Biology', 'Chemistry'], experience: '2 years', status: 'Pending' },
+            { id: 2, name: 'Michael Brown', email: 'michael@nust.ac.zw', subjects: ['Computer Science'], experience: '3 years', status: 'Pending' },
+        ];
+
+        const ALL_USERS = [
+            { id: 1, name: 'John Doe', email: 'john@nust.ac.zw', role: 'student', joined: '2025-10-15', status: 'Active', sessions: 5 },
+            { id: 2, name: 'Alice Smith', email: 'alice@nust.ac.zw', role: 'tutor', joined: '2025-09-01', status: 'Active', sessions: 156 },
+            { id: 3, name: 'Bob Johnson', email: 'bob@nust.ac.zw', role: 'tutor', joined: '2025-08-20', status: 'Active', sessions: 142 },
+            { id: 4, name: 'Sarah Lee', email: 'sarah@nust.ac.zw', role: 'student', joined: '2025-11-01', status: 'Active', sessions: 2 },
+        ];
+
+        const RECENT_SESSIONS = [
+            { id: 1, student: 'John Doe', tutor: 'Alice Smith', subject: 'Mathematics', date: '2025-11-11', status: 'Completed', rating: 5 },
+            { id: 2, student: 'Sarah Lee', tutor: 'Bob Johnson', subject: 'Physics', date: '2025-11-11', status: 'Completed', rating: 4 },
+            { id: 3, student: 'Mike Brown', tutor: 'Alice Smith', subject: 'Mathematics', date: '2025-11-12', status: 'Scheduled', rating: null },
+        ];
+
+        const REPORTS = [
+            { id: 1, reporter: 'John Doe', reported: 'Session delay', session: 'Math - 2025-11-10', status: 'Under Review' },
+            { id: 2, reporter: 'Sarah Lee', reported: 'Content issue', session: 'Physics - 2025-11-09', status: 'Resolved' },
+        ];
+
+        function renderAdminDashboard(user) {
+            return `
+                ${createHeader(user, handleLogout)}
+                <div class="container py-8">
+                    <div class="grid md-grid-cols-3 lg-grid-cols-6 mb-8">
+                        <div class="card">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray text-sm">Students</span>
+                                ${createIcon('users', 'icon')}
+                            </div>
+                            <div class="text-2xl" style="font-weight: 600;">1,247</div>
+                            <div class="text-xs text-success mt-1">+12% this month</div>
+                        </div>
+                        <div class="card">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray text-sm">Tutors</span>
+                                ${createIcon('users', 'icon')}
+                            </div>
+                            <div class="text-2xl" style="font-weight: 600;">89</div>
+                            <div class="text-xs text-success mt-1">+5% this month</div>
+                        </div>
+                        <div class="card">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray text-sm">Active Sessions</span>
+                                ${createIcon('book', 'icon text-primary')}
+                            </div>
+                            <div class="text-2xl" style="font-weight: 600;">234</div>
+                            <div class="text-xs text-gray mt-1">Currently ongoing</div>
+                        </div>
+                        <div class="card">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray text-sm">Total Sessions</span>
+                                ${createIcon('trending-up', 'icon text-primary')}
+                            </div>
+                            <div class="text-2xl" style="font-weight: 600;">3,456</div>
+                            <div class="text-xs text-success mt-1">+18% this month</div>
+                        </div>
+                        <div class="card">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray text-sm">Avg Rating</span>
+                                ${createIcon('star', 'icon')}
+                            </div>
+                            <div class="text-2xl" style="font-weight: 600;">4.7</div>
+                            <div class="flex gap-0.5 mt-1">
+                                ${createStarRating(5)}
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-gray text-sm">Pending</span>
+                                ${createIcon('alert', 'icon')}
+                            </div>
+                            <div class="text-2xl" style="font-weight: 600;">${PENDING_TUTORS.length}</div>
+                            <div class="text-xs" style="color: var(--warning); margin-top: 0.25rem;">Needs approval</div>
+                        </div>
+                    </div>
+
+                    ${createTabs([
+                        { id: 'approvals', label: 'Approvals', badge: PENDING_TUTORS.length },
+                        { id: 'users', label: 'Users' },
+                        { id: 'sessions', label: 'Sessions' },
+                        { id: 'reports', label: 'Reports' }
+                    ], currentAdminTab, 'changeAdminTab')}
+                    
+                    <div id="admin-tab-approvals" class="tab-content ${currentAdminTab === 'approvals' ? 'active' : ''}">
+                        ${renderApprovalsTab()}
+                    </div>
+                    
+                    <div id="admin-tab-users" class="tab-content ${currentAdminTab === 'users' ? 'active' : ''}">
+                        ${renderUsersTab()}
+                    </div>
+                    
+                    <div id="admin-tab-sessions" class="tab-content ${currentAdminTab === 'sessions' ? 'active' : ''}">
+                        ${renderAdminSessionsTab()}
+                    </div>
+                    
+                    <div id="admin-tab-reports" class="tab-content ${currentAdminTab === 'reports' ? 'active' : ''}">
+                        ${renderReportsTab()}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderApprovalsTab() {
+            return `
+                <h2 style="font-weight: 600; margin-bottom: 1.5rem;">Pending Tutor Approvals</h2>
+                ${PENDING_TUTORS.length === 0 ? `
+                    <div class="card text-center" style="padding: 2rem;">
+                        <p class="text-gray">No pending approvals</p>
+                    </div>
+                ` : `
+                    <div class="space-y-4">
+                        ${PENDING_TUTORS.map(tutor => `
+                            <div class="card">
+                                <div class="flex items-center gap-3 mb-3">
+                                    ${createAvatar(tutor.name, '', '#F59E0B')}
+                                    <div>
+                                        <h3 style="font-weight: 600;">${escapeHtml(tutor.name)}</h3>
+                                        <p class="text-sm text-gray">${escapeHtml(tutor.email)}</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 mb-4">
+                                    <div class="text-sm">
+                                        <strong>Subjects:</strong> ${tutor.subjects.join(', ')}
+                                    </div>
+                                    <div class="text-sm">
+                                        <strong>Experience:</strong> ${tutor.experience}
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="btn btn-success btn-sm" onclick="approveTutor(${tutor.id})">
+                                        ${createIcon('check', 'icon-sm')}
+                                        Approve
+                                    </button>
+                                    <button class="btn btn-outline btn-sm" onclick="rejectTutor(${tutor.id})">
+                                        ${createIcon('x', 'icon-sm')}
+                                        Reject
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `}
+            `;
+        }
+
+        function renderUsersTab() {
+            const filteredUsers = ALL_USERS.filter(u =>
+                u.name.toLowerCase().includes(adminSearchQuery.toLowerCase()) ||
+                u.email.toLowerCase().includes(adminSearchQuery.toLowerCase())
+            );
+
+            return `
+                <div class="flex items-center justify-between mb-6">
+                    <h2 style="font-weight: 600;">User Management</h2>
+                    <div class="search-wrapper" style="width: 16rem;">
+                        ${createIcon('search', 'icon search-icon')}
+                        <input type="text" class="input search-input" placeholder="Search users..." 
+                               value="${adminSearchQuery}" oninput="handleAdminSearch(this.value)">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                    <th>Sessions</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${filteredUsers.map(user => `
+                                    <tr>
+                                        <td>
+                                            <div class="flex items-center gap-2">
+                                                ${createAvatar(user.name, '', user.role === 'student' ? '#3B82F6' : '#10B981')}
+                                                ${escapeHtml(user.name)}
+                                            </div>
+                                        </td>
+                                        <td>${escapeHtml(user.email)}</td>
+                                        <td>${createBadge(user.role, user.role === 'student' ? 'blue' : 'green')}</td>
+                                        <td>${user.joined}</td>
+                                        <td>${user.sessions}</td>
+                                        <td>${createBadge(user.status, 'success')}</td>
+                                        <td>
+                                            <button class="btn btn-outline btn-sm" onclick="suspendUser(${user.id})">Suspend</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAdminSessionsTab() {
+            return `
+                <h2 style="font-weight: 600; margin-bottom: 1.5rem;">Recent Sessions</h2>
+                <div class="card">
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Tutor</th>
+                                    <th>Subject</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${RECENT_SESSIONS.map(session => `
+                                    <tr>
+                                        <td>${escapeHtml(session.student)}</td>
+                                        <td>${escapeHtml(session.tutor)}</td>
+                                        <td>${escapeHtml(session.subject)}</td>
+                                        <td>${session.date}</td>
+                                        <td>${createBadge(session.status, session.status === 'Completed' ? 'success' : 'blue')}</td>
+                                        <td>
+                                            ${session.rating ? `
+                                                <div class="flex items-center gap-1">
+                                                    ${createIcon('star', 'icon-sm star-filled')}
+                                                    <span>${session.rating}</span>
+                                                </div>
+                                            ` : '<span class="text-gray">N/A</span>'}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderReportsTab() {
+            return `
+                <h2 style="font-weight: 600; margin-bottom: 1.5rem;">Reports & Issues</h2>
+                <div class="space-y-4">
+                    ${REPORTS.map(report => `
+                        <div class="card">
+                            <div class="flex items-center gap-2 mb-2">
+                                ${createIcon('alert', 'icon')}
+                                <h3 style="font-weight: 600;">${escapeHtml(report.reported)}</h3>
+                            </div>
+                            <div class="space-y-1 text-sm text-gray mb-3">
+                                <p><strong>Reporter:</strong> ${escapeHtml(report.reporter)}</p>
+                                <p><strong>Session:</strong> ${escapeHtml(report.session)}</p>
+                            </div>
+                            ${createBadge(report.status, report.status === 'Resolved' ? 'success' : 'warning')}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function changeAdminTab(tabId) {
+            currentAdminTab = tabId;
+            renderApp();
+        }
+
+        function handleAdminSearch(value) {
+            adminSearchQuery = value;
+            document.getElementById('admin-tab-users').innerHTML = renderUsersTab();
+        }
+
+        function approveTutor(tutorId) {
+            showToast('Tutor approved successfully!', 'success');
+        }
+
+        function rejectTutor(tutorId) {
+            showToast('Tutor application rejected', 'success');
+        }
+
+        function suspendUser(userId) {
+            showToast('User suspended', 'success');
+        }
+
+        function initAdminDashboard() {}
+
+        // ===== MAIN APP =====
+        let currentPage = 'login';
+
+        function init() {
+            if (auth.isAuthenticated()) {
+                const user = auth.getUser();
+                currentPage = user.role + '-dashboard';
+            }
+            renderApp();
+        }
+
+        function renderApp() {
+            const app = document.getElementById('app');
+            const user = auth.getUser();
+            
+            let content = '';
+            
+            switch (currentPage) {
+                case 'login':
+                    content = renderLoginPage();
+                    break;
+                case 'register':
+                    content = renderRegisterPage();
+                    break;
+                case 'student-dashboard':
+                    if (!user || user.role !== 'student') {
+                        currentPage = 'login';
+                        content = renderLoginPage();
+                    } else {
+                        content = renderStudentDashboard(user);
+                    }
+                    break;
+                case 'tutor-dashboard':
+                    if (!user || user.role !== 'tutor') {
+                        currentPage = 'login';
+                        content = renderLoginPage();
+                    } else {
+                        content = renderTutorDashboard(user);
+                    }
+                    break;
+                case 'admin-dashboard':
+                    if (!user || user.role !== 'admin') {
+                        currentPage = 'login';
+                        content = renderLoginPage();
+                    } else {
+                        content = renderAdminDashboard(user);
+                    }
+                    break;
+                default:
+                    content = renderLoginPage();
+            }
+            
+            app.innerHTML = content;
+            
+            switch (currentPage) {
+                case 'login':
+                    initLoginPage();
+                    break;
+                case 'register':
+                    initRegisterPage();
+                    break;
+                case 'student-dashboard':
+                    initStudentDashboard();
+                    break;
+                case 'tutor-dashboard':
+                    initTutorDashboard();
+                    break;
+                case 'admin-dashboard':
+                    initAdminDashboard();
+                    break;
+            }
+        }
+
+        function navigateTo(page) {
+            currentPage = page;
+            renderApp();
+        }
+
+        function handleLogout() {
+            auth.logout();
+            showToast('Logged out successfully', 'success');
+            navigateTo('login');
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>
+
+<!-- 
+Example Accounts
+Student: `student@nust.ac.zw` / `student123`
+Tutor: `tutor@nust.ac.zw` / `tutor123`
+Admin: `admin@nust.ac.zw` / `admin123`
+-->
